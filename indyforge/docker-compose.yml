@@ -1,0 +1,68 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: indyforge-api
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://indyforge:password@db:5432/indyforge?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      PORT: 3000
+    depends_on:
+      - db
+      - redis
+
+  worker-triage:
+    build: .
+    container_name: indyforge-triage
+    command: ["node", "dist/workers/triage.js"]
+    environment:
+      DATABASE_URL: postgres://indyforge:password@db:5432/indyforge?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+
+  worker-decision:
+    build: .
+    container_name: indyforge-decision
+    command: ["node", "dist/workers/decision.js"]
+    environment:
+      DATABASE_URL: postgres://indyforge:password@db:5432/indyforge?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+
+  worker-verifier:
+    build: .
+    container_name: indyforge-verifier
+    command: ["node", "dist/workers/verifier.js"]
+    environment:
+      DATABASE_URL: postgres://indyforge:password@db:5432/indyforge?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15
+    container_name: indyforge-db
+    environment:
+      POSTGRES_USER: indyforge
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: indyforge
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: indyforge-redis
+    ports:
+      - "6379:6379"

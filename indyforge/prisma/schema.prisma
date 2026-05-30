@@ -1,0 +1,26 @@
+// Prisma schema for IndyForge
+// See https://www.prisma.io/docs/concepts/components/prisma-schema for details
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model DecisionCard {
+  id             Int      @id @default(autoincrement())
+  source         String
+  domain         String
+  urgency        String
+  reversibility  String
+  riskTier       String
+  missingData    String
+  options        String
+  nextAction     String
+  approvalAction String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
